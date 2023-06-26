@@ -18,7 +18,6 @@ async function signIn(params: SignInParams): Promise<SignInResult> {
   await validatePasswordOrFail(password, user.password);
 
   const token = await createSession(user.id);
-
   return {
     user: exclude(user, 'password'),
     token,
@@ -26,7 +25,7 @@ async function signIn(params: SignInParams): Promise<SignInResult> {
 }
 
 async function getUserOrFail(email: string): Promise<GetUserOrFailResult> {
-  const user = await userRepository.findByEmail(email, { id: true, email: true, password: true });
+  const user = await userRepository.findByEmail(email, { id: true, name:  true, email: true, password: true });
   if (!user) throw notFoundError();
 
   return user;
@@ -50,11 +49,11 @@ async function validatePasswordOrFail(password: string, userPassword: string) {
 export type SignInParams = Pick<Users, 'email' | 'password'>;
 
 type SignInResult = {
-  user: Pick<Users, 'id' | 'email'>;
+  user: Pick<Users, 'id' | 'name' | 'email'>;
   token: string;
 };
 
-type GetUserOrFailResult = Pick<Users, 'id' | 'email' | 'password'>;
+type GetUserOrFailResult = Pick<Users, 'id' | 'email' | 'name' | 'password'>;
 
 const authenticationService = {
   signIn,

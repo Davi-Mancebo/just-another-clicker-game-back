@@ -6,6 +6,6 @@ import { createUser } from '../controllers/users-controller';
 
 const usersRouter = Router();
 
-usersRouter.post('/', validateBody(createUserSchema), createUser);
+usersRouter.post('/', createUser);
 
 export { usersRouter };

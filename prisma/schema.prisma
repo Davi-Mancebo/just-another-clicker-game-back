@@ -12,6 +12,7 @@ model Users {
   email     String    @unique @db.VarChar(255)
   name      String    @db.VarChar(255)
   password  String    @db.VarChar(255)
+  points    BigInt    @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -23,7 +24,8 @@ model Users {
 model PowerUp {
   id       Int      @id @default(autoincrement())
   name     String   @db.VarChar(255)
-  function String   @db.VarChar(500)
+  power_function String   @db.VarChar(500)
+  type       type
 
   // Relação com UserPower
   users    UserPower[]
@@ -39,7 +41,10 @@ model UserPower {
   user       Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   power      PowerUp  @relation(fields: [powerId], references: [id], onDelete: Cascade)
 }
-
+enum type {
+  continuo
+  compravel
+}
 model Session {
   id       Int      @id @default(autoincrement())
   userId   Int

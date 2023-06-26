@@ -2,8 +2,9 @@ import { Users } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { duplicatedEmailError } from './errors';
 import userRepository from '@/repositories/user-repository';
+import powerRepository from '@/repositories/power-repository';
 
-export async function createUser({ email, name, password }: CreateUserParams): Promise<Users> {
+async function createUser({ email, name, password, points }: CreateUserParams): Promise<Users> {
   await validateUniqueEmailOrFail(email);
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -11,7 +12,19 @@ export async function createUser({ email, name, password }: CreateUserParams): P
     email,
     name,
     password: hashedPassword,
+    points
   });
+}
+
+async function saveGame(userId: number, powerUpId: number, quantity: number) {
+  const powerUpExistOnUser = await powerRepository.userHaveThisPower(userId, powerUpId)
+
+  if(powerUpExistOnUser) {
+    return userRepository.updateCurrentGame(powerUpExistOnUser.id, quantity)
+  }
+  else{
+    return userRepository.saveGame(userId, powerUpId, quantity)
+  }
 }
 
 async function validateUniqueEmailOrFail(email: string) {
@@ -21,11 +34,11 @@ async function validateUniqueEmailOrFail(email: string) {
   }
 }
 
-
-export type CreateUserParams = Pick<Users, 'email' | 'name' | 'password'>;
+export type CreateUserParams = Pick<Users, 'email' | 'name' | 'password' | 'points'>;
 
 const userService = {
   createUser,
+  saveGame
 };
 
 export * from './errors';

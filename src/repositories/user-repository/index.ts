@@ -20,10 +20,31 @@ async function create(data: Prisma.UsersUncheckedCreateInput) {
     data,
   });
 }
+async function saveGame(userId: number, powerId: number, quantity: number) {
+  return prisma.userPower.create({
+    data: {
+      userId,
+      powerId,
+      quantity,
+    },
+  });
+}
+async function updateCurrentGame(powerUserId: number, quantity: number) {
+  return prisma.userPower.update({
+    data: {
+      quantity: quantity,
+    },
+    where: {
+      id: powerUserId,
+    },
+  });
+}
 
 const userRepository = {
   findByEmail,
   create,
+  saveGame,
+  updateCurrentGame,
 };
 
 export default userRepository;
